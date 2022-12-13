@@ -12,17 +12,21 @@ print(device)
 input_lang, output_lang, pairs = dp.prepareData('eng', 'spa', True)
 
 try:
-    # encoder1 = torch.load('encoder_lstm.pth', map_location=torch.device('cpu'))
-    # attn_decoder1 = torch.load('attn_decoder1_lstm.pth', map_location=torch.device('cpu'))
-    encoder1 = torch.load('encoder_gru_4L.pth')
-    attn_decoder1 = torch.load('attn_decoder1_gru_4L.pth')
+    encoder1 = torch.load('encoder_gru_4L.pth', map_location=torch.device('cpu'))
+    attn_decoder1 = torch.load('attn_decoder1_gru_4L.pth', map_location=torch.device('cpu'))
+    # encoder1 = torch.load('encoder_gru_4L.pth')
+    # attn_decoder1 = torch.load('attn_decoder1_gru_4L.pth')
     # eval.evaluateAndShowAttention('Cada vez que escucho esta canción, lloro.', encoder1, attn_decoder1, input_lang, output_lang)
     user_input = input('Input sentence to be translated: ')
-    while user_input != 'exit' or 'Exit':
-        output_words, attentions = eval.evaluate(encoder1, attn_decoder1, user_input, input_lang, output_lang)
-        output_sentence = ' '.join(output_words)
-        print(output_sentence)
-        user_input = input('Input sentence to be translated: ')
+    while user_input.lower() != 'exit':
+        try:
+            output_words, attentions = eval.evaluate(encoder1, attn_decoder1, user_input, input_lang, output_lang)
+            output_sentence = ' '.join(output_words)
+            print(output_sentence)
+            user_input = input('Input sentence to be translated: ')
+        except KeyError:
+            print("You entered a word not in the dictionary. String cannot be processed.")
+            user_input = input('Input sentence to be translated: ')
 
 except FileNotFoundError:
 
