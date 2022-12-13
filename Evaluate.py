@@ -29,13 +29,14 @@ def evaluate(encoder, decoder, sentence, input_lang, output_lang, max_length=MAX
             decoder_input = torch.tensor([[SOS_token]], device=device)
 
             decoder_hidden = encoder_hidden
+            decoder_context = decoder.initContext()
 
             decoded_words = []
             decoder_attentions = torch.zeros(max_length, max_length)
 
         for di in range(max_length):
-            decoder_output, decoder_hidden, decoder_attention = decoder(
-                decoder_input, decoder_hidden, encoder_outputs)
+            decoder_output, decoder_hidden, decoder_attention, decoder_context = decoder(
+                decoder_input, decoder_hidden, encoder_outputs, decoder_context)
             decoder_attentions[di] = decoder_attention.data
             topv, topi = decoder_output.data.topk(1)
             if topi.item() == EOS_token:

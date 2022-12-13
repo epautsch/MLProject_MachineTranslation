@@ -47,19 +47,20 @@ def train(input_tensor, target_tensor,
     decoder_input = torch.tensor([[SOS_token]], device=device)
 
     decoder_hidden = encoder_hidden
+    decoder_context = decoder.initContext()
 
     use_teacher_forcing = True if random.random() < teacher_forcing_ratio else False
 
     if use_teacher_forcing:
         for di in range(target_length):
-            decoder_output, decoder_hidden, decoder_attention = decoder(
-                decoder_input, decoder_hidden, encoder_outputs)
+            decoder_output, decoder_hidden, decoder_attention, decoder_context = decoder(
+                decoder_input, decoder_hidden, encoder_outputs, decoder_context)
             loss += criterion(decoder_output, target_tensor[di])
             decoder_input = target_tensor[di]
     else:
         for di in range(target_length):
-            decoder_output, decoder_hidden, decoder_attention = decoder(
-                decoder_input, decoder_hidden, encoder_outputs)
+            decoder_output, decoder_hidden, decoder_attention, decoder_context = decoder(
+                decoder_input, decoder_hidden, encoder_outputs, decoder_context)
             topv, topi = decoder_output.topk(1)
             decoder_input = topi.squeeze().detach()
             loss += criterion(decoder_output, target_tensor[di])
