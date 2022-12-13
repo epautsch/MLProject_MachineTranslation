@@ -14,8 +14,8 @@ input_lang, output_lang, pairs = dp.prepareData('eng', 'spa', True)
 try:
     # encoder1 = torch.load('encoder_lstm.pth', map_location=torch.device('cpu'))
     # attn_decoder1 = torch.load('attn_decoder1_lstm.pth', map_location=torch.device('cpu'))
-    encoder1 = torch.load('encoder_lstm.pth')
-    attn_decoder1 = torch.load('attn_decoder1_lstm.pth')
+    encoder1 = torch.load('encoder_gru_2L.pth')
+    attn_decoder1 = torch.load('attn_decoder1_gru_2L.pth')
     # eval.evaluateAndShowAttention('Cada vez que escucho esta canción, lloro.', encoder1, attn_decoder1, input_lang, output_lang)
     user_input = input('Input sentence to be translated: ')
     while user_input != 'exit' or 'Exit':
@@ -32,8 +32,8 @@ except FileNotFoundError:
     trn.trainIters(encoder1, attn_decoder1, 150000, pairs, input_lang, output_lang, print_every=100)
     print(random.choice(pairs))
     eval.evaluateRandomly(encoder1, attn_decoder1, pairs, input_lang, output_lang)
-    torch.save(encoder1, 'encoder_lstm.pth')
-    torch.save(attn_decoder1, 'attn_decoder1_lstm.pth')
+    torch.save(encoder1, 'encoder_gru_2L.pth')
+    torch.save(attn_decoder1, 'attn_decoder1_gru_2L.pth')
     output_words, attentions = eval.evaluate(encoder1, attn_decoder1, "Mi nombre es .", input_lang, output_lang)
     plt.matshow(attentions.numpy())
 
