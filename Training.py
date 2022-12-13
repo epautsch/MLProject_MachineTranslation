@@ -11,13 +11,10 @@ import matplotlib.ticker as ticker
 import DataPrep as dp
 
 
-
-plt.switch_backend('agg')
-
 MAX_LENGTH = dp.MAX_LENGTH
 SOS_token = 0
 EOS_token = 1
-teacher_forcing_ratio = 0.5
+teacher_forcing_ratio = 0.8
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
@@ -40,10 +37,10 @@ def train(input_tensor, target_tensor,
     loss = 0
 
     for ei in range(input_length):
-        # encoder_output, encoder_hidden, encoder_context = encoder(
-        #     input_tensor[ei], encoder_hidden, encoder_context)
-        encoder_output, encoder_hidden = encoder(
-            input_tensor[ei], encoder_hidden)
+        encoder_output, encoder_hidden, encoder_context = encoder(
+            input_tensor[ei], encoder_hidden, encoder_context)
+        # encoder_output, encoder_hidden = encoder(
+        #     input_tensor[ei], encoder_hidden)
         encoder_outputs[ei] = encoder_output[0, 0]
 
     decoder_input = torch.tensor([[SOS_token]], device=device)
@@ -55,18 +52,18 @@ def train(input_tensor, target_tensor,
 
     if use_teacher_forcing:
         for di in range(target_length):
-            # decoder_output, decoder_hidden, decoder_attention, decoder_context = decoder(
-            #     decoder_input, decoder_hidden, encoder_outputs, decoder_context)
-            decoder_output, decoder_hidden, decoder_attention = decoder(
-                decoder_input, decoder_hidden, encoder_outputs)
+            decoder_output, decoder_hidden, decoder_attention, decoder_context = decoder(
+                decoder_input, decoder_hidden, encoder_outputs, decoder_context)
+            # decoder_output, decoder_hidden, decoder_attention = decoder(
+            #     decoder_input, decoder_hidden, encoder_outputs)
             loss += criterion(decoder_output, target_tensor[di])
             decoder_input = target_tensor[di]
     else:
         for di in range(target_length):
-            # decoder_output, decoder_hidden, decoder_attention, decoder_context = decoder(
-            #     decoder_input, decoder_hidden, encoder_outputs, decoder_context)
-            decoder_output, decoder_hidden, decoder_attention = decoder(
-                decoder_input, decoder_hidden, encoder_outputs)
+            decoder_output, decoder_hidden, decoder_attention, decoder_context = decoder(
+                decoder_input, decoder_hidden, encoder_outputs, decoder_context)
+            # decoder_output, decoder_hidden, decoder_attention = decoder(
+            #     decoder_input, decoder_hidden, encoder_outputs)
             topv, topi = decoder_output.topk(1)
             decoder_input = topi.squeeze().detach()
             loss += criterion(decoder_output, target_tensor[di])

@@ -3,7 +3,7 @@ import torch
 import unicodedata
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-MAX_LENGTH = 30
+MAX_LENGTH = 75
 SOS_token = 0
 EOS_token = 1
 
