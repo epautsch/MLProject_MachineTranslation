@@ -21,11 +21,11 @@ def evaluate(encoder, decoder, sentence, input_lang, output_lang, max_length=MAX
         encoder_outputs = torch.zeros(max_length, encoder.hidden_size, device=device)
 
         for ei in range(input_length):
-            encoder_output, encoder_hidden, encoder_context = encoder(input_tensor[ei],
-                                                                      encoder_hidden,
-                                                                      encoder_context)
-            # encoder_output, encoder_hidden = encoder(input_tensor[ei],
-            #                                          encoder_hidden)
+            # encoder_output, encoder_hidden, encoder_context = encoder(input_tensor[ei],
+            #                                                           encoder_hidden,
+            #                                                           encoder_context)
+            encoder_output, encoder_hidden = encoder(input_tensor[ei],
+                                                     encoder_hidden)
 
             encoder_outputs[ei] += encoder_output[0, 0]
 
@@ -38,10 +38,10 @@ def evaluate(encoder, decoder, sentence, input_lang, output_lang, max_length=MAX
             decoder_attentions = torch.zeros(max_length, max_length)
 
         for di in range(max_length):
-            decoder_output, decoder_hidden, decoder_attention, decoder_context = decoder(
-                decoder_input, decoder_hidden, encoder_outputs, decoder_context)
-            # decoder_output, decoder_hidden, decoder_attention = decoder(
-            #     decoder_input, decoder_hidden, encoder_outputs)
+            # decoder_output, decoder_hidden, decoder_attention, decoder_context = decoder(
+            #     decoder_input, decoder_hidden, encoder_outputs, decoder_context)
+            decoder_output, decoder_hidden, decoder_attention = decoder(
+                decoder_input, decoder_hidden, encoder_outputs)
             decoder_attentions[di] = decoder_attention.data
             topv, topi = decoder_output.data.topk(1)
             if topi.item() == EOS_token:
