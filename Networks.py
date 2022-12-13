@@ -15,7 +15,7 @@ class EncoderRNN(nn.Module):
 
         self.embedding = nn.Embedding(input_size, hidden_size)
         # self.lstm = nn.LSTM(hidden_size, hidden_size)
-        self.gru = nn.GRU(hidden_size, hidden_size, num_layers=2)
+        self.gru = nn.GRU(hidden_size, hidden_size, num_layers=4)
 
     def forward(self, input, hidden): #context
         embedded = self.embedding(input).view(1, 1, -1)
@@ -26,7 +26,7 @@ class EncoderRNN(nn.Module):
         return output, hidden
 
     def initHidden(self):
-        return torch.zeros(2, 1, self.hidden_size, device=device)
+        return torch.zeros(4, 1, self.hidden_size, device=device)
 
     def initContext(self):
         return torch.zeros(1, 1, self.hidden_size, device=device)
@@ -45,7 +45,7 @@ class AttnDecoderRNN(nn.Module):
         self.attn_combine = nn.Linear(self.hidden_size * 2, self.hidden_size)
         self.dropout = nn.Dropout(self.dropout_p)
         # self.lstm = nn.LSTM(self.hidden_size, self.hidden_size)
-        self.gru = nn.GRU(self.hidden_size, self.hidden_size, num_layers=2)
+        self.gru = nn.GRU(self.hidden_size, self.hidden_size, num_layers=4)
         self.out = nn.Linear(self.hidden_size, self.output_size)
 
     def forward(self, input, hidden, encoder_outputs): # context
@@ -69,7 +69,7 @@ class AttnDecoderRNN(nn.Module):
         return output, hidden, attn_weights
 
     def initHidden(self):
-        return torch.zeros(2, 1, self.hidden_size, device=device)
+        return torch.zeros(4, 1, self.hidden_size, device=device)
 
     def initContext(self):
         return torch.zeros(1, 1, self.hidden_size, device=device)
