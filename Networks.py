@@ -14,15 +14,19 @@ class EncoderRNN(nn.Module):
         self.hidden_size = hidden_size
 
         self.embedding = nn.Embedding(input_size, hidden_size)
-        self.gru = nn.GRU(hidden_size, hidden_size)
+        self.lstm = nn.LSTM(hidden_size, hidden_size)
+        # self.gru = nn.gru(hidden_size, hidden_size)
 
-    def forward(self, input, hidden):
+    def forward(self, input, hidden, context):
         embedded = self.embedding(input).view(1, 1, -1)
         output = embedded
-        output, hidden = self.gru(output, hidden)
-        return output, hidden
+        output, (hidden, context) = self.lstm(output, (hidden, context))
+        return output, hidden, context
 
     def initHidden(self):
+        return torch.zeros(1, 1, self.hidden_size, device=device)
+
+    def initContext(self):
         return torch.zeros(1, 1, self.hidden_size, device=device)
 
 

@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import DataPrep as dp
 
-
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 MAX_LENGTH = dp.MAX_LENGTH
 SOS_token = 0
@@ -17,12 +16,14 @@ def evaluate(encoder, decoder, sentence, input_lang, output_lang, max_length=MAX
         input_tensor = dp.tensorFromSentence(input_lang, sentence)
         input_length = input_tensor.size()[0]
         encoder_hidden = encoder.initHidden()
+        encoder_context = encoder.initContext()
 
         encoder_outputs = torch.zeros(max_length, encoder.hidden_size, device=device)
 
         for ei in range(input_length):
-            encoder_output, encoder_hidden = encoder(input_tensor[ei],
-                                                     encoder_hidden)
+            encoder_output, encoder_hidden, encoder_context = encoder(input_tensor[ei],
+                                                                      encoder_hidden,
+                                                                      encoder_context)
             encoder_outputs[ei] += encoder_output[0, 0]
 
             decoder_input = torch.tensor([[SOS_token]], device=device)

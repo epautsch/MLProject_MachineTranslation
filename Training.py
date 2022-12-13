@@ -26,7 +26,7 @@ def train(input_tensor, target_tensor,
           encoder_optimizer, decoder_optimizer,
           criterion, max_length=MAX_LENGTH):
     encoder_hidden = encoder.initHidden()
-
+    encoder_context = encoder.initContext()
     encoder_optimizer.zero_grad()
     decoder_optimizer.zero_grad()
 
@@ -40,8 +40,8 @@ def train(input_tensor, target_tensor,
     loss = 0
 
     for ei in range(input_length):
-        encoder_output, encoder_hidden = encoder(
-            input_tensor[ei], encoder_hidden)
+        encoder_output, encoder_hidden, encoder_context= encoder(
+            input_tensor[ei], encoder_hidden, encoder_context)
         encoder_outputs[ei] = encoder_output[0, 0]
 
     decoder_input = torch.tensor([[SOS_token]], device=device)
