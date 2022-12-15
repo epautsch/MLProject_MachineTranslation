@@ -11,11 +11,12 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(device)
 input_lang, output_lang, pairs = dp.prepareData('eng', 'spa', True)
 
+
 try:
-    # encoder1 = torch.load('encoder_gru_6L_tf0_2.pth', map_location=torch.device('cpu'))
-    # attn_decoder1 = torch.load('attn_decoder1_gru_6L_tf0_2.pth', map_location=torch.device('cpu'))
-    encoder1 = torch.load('encoder_gru_6L_tf0_2.pth')
-    attn_decoder1 = torch.load('attn_decoder1_gru_6L_tf0_2.pth')
+    # encoder1 = torch.load('encoder_gru_4L_tf0_5_ml30_i225k.pth', map_location=torch.device('cpu'))
+    # attn_decoder1 = torch.load('attn_decoder1_gru_4L_tf0_5_ml30_i225k.pth', map_location=torch.device('cpu'))
+    encoder1 = torch.load('encoder_gru_4L_tf0_5_ml30_i225k.pth')
+    attn_decoder1 = torch.load('attn_decoder1_gru_4L_tf0_5_ml30_i225k.pth')
     # eval.evaluateAndShowAttention('Cada vez que escucho esta canción, lloro.', encoder1, attn_decoder1, input_lang, output_lang)
     user_input = input('Input sentence to be translated: ')
     while user_input.lower() != 'exit':
@@ -30,14 +31,14 @@ try:
 
 except FileNotFoundError:
 
-    hidden_size = 256
+    hidden_size = 300
     encoder1 = net.EncoderRNN(input_lang.n_words, hidden_size).to(device)
     attn_decoder1 = net.AttnDecoderRNN(hidden_size, output_lang.n_words, dropout_p=0.1).to(device)
-    trn.trainIters(encoder1, attn_decoder1, 450000, pairs, input_lang, output_lang, print_every=1000)
+    trn.trainIters(encoder1, attn_decoder1, 225000, pairs, input_lang, output_lang, print_every=1000, plot_every=1000)
     print(random.choice(pairs))
     eval.evaluateRandomly(encoder1, attn_decoder1, pairs, input_lang, output_lang)
-    torch.save(encoder1, 'encoder_gru_6L_tf0_2.pth')
-    torch.save(attn_decoder1, 'attn_decoder1_gru_6L_tf0_2.pth')
+    torch.save(encoder1, 'encoder_gru_4L_tf0_5_ml30_i225k.pth')
+    torch.save(attn_decoder1, 'attn_decoder1_gru_4L_tf0_5_ml30_i225k.pth')
     output_words, attentions = eval.evaluate(encoder1, attn_decoder1, "Mi nombre es .", input_lang, output_lang)
     plt.matshow(attentions.numpy())
 

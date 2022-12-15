@@ -14,7 +14,7 @@ import DataPrep as dp
 MAX_LENGTH = dp.MAX_LENGTH
 SOS_token = 0
 EOS_token = 1
-teacher_forcing_ratio = 0.2
+teacher_forcing_ratio = 0.5
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
